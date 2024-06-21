@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Experience Calculation Form</title>
+</head>
+<body>
+    <h2>Previous experiences relevant for the post (1 step for each 3 years)</h2>
+    <form id="experienceForm" enctype="multipart/form-data">
+        <div id="experienceInputs">
+            <div class="experienceEntry">
+                <label for="startDate1">Start date:</label>
+                <input type="date" id="startDate1" name="startDate1">
+                
+                <label for="endDate1">End date:</label>
+                <input type="date" id="endDate1" name="endDate1">
+                
+                <label for="fte1">Full-time equivalent (%):</label>
+                <input type="number" id="fte1" name="fte1" min="0" max="100" value="100">
+                
+                <label for="relevancy1">Relevancy of experience (%):</label>
+                <input type="number" id="relevancy1" name="relevancy1" min="0" max="100" value="100">
+                
+                <label for="employmentType1">Employment Type:</label>
+                <select id="employmentType1" name="employmentType1">
+                    <option value="fulltime">Full-time</option>
+                    <option value="parttime">Part-time</option>
+                    <option value="internship">Internship</option>
+                    <option value="volunteer">Volunteer Work</option>
+                    <option value="traineeship">Traineeship</option>
+                    <option value="contract">Fixed Term/Contract</option>
+                </select>
+                
+                <label for="title1">Post (Title, Employer):</label>
+                <input type="text" id="title1" name="title1">
+                
+                <label for="upload1">Upload Certificate/Pay Slip:</label>
+                <input type="file" id="upload1" name="upload1">
+            </div>
+        </div>
+        <button type="button" onclick="addExperienceEntry()">Add another experience</button>
+        <button type="button" onclick="calculateExperience()">Calculate Experience</button>
+    </form>
+
+    <h3>Total Experience:</h3>
+    <p id="totalExperience"></p>
+
+    <script>
+        let experienceCount = 1;
+
+        function addExperienceEntry() {
+            experienceCount++;
+            const experienceDiv = document.createElement('div');
+            experienceDiv.className = 'experienceEntry';
+            experienceDiv.innerHTML = `
+                <label for="startDate${experienceCount}">Start date:</label>
+                <input type="date" id="startDate${experienceCount}" name="startDate${experienceCount}">
+                
+                <label for="endDate${experienceCount}">End date:</label>
+                <input type="date" id="endDate${experienceCount}" name="endDate${experienceCount}">
+                
+                <label for="fte${experienceCount}">Full-time equivalent (%):</label>
+                <input type="number" id="fte${experienceCount}" name="fte${experienceCount}" min="0" max="100" value="100">
+                
+                <label for="relevancy${experienceCount}">Relevancy of experience (%):</label>
+                <input type="number" id="relevancy${experienceCount}" name="relevancy${experienceCount}" min="0" max="100" value="100">
+                
+                <label for="employmentType${experienceCount}">Employment Type:</label>
+                <select id="employmentType${experienceCount}" name="employmentType${experienceCount}">
+                    <option value="fulltime">Full-time</option>
+                    <option value="parttime">Part-time</option>
+                    <option value="internship">Internship</option>
+                    <option value="volunteer">Volunteer Work</option>
+                    <option value="traineeship">Traineeship</option>
+                    <option value="contract">Fixed Term/Contract</option>
+                </select>
+                
+                <label for="title${experienceCount}">Post (Title, Employer):</label>
+                <input type="text" id="title${experienceCount}" name="title${experienceCount}">
+                
+                <label for="upload${experienceCount}">Upload Certificate/Pay Slip:</label>
+                <input type="file" id="upload${experienceCount}" name="upload${experienceCount}">
+            `;
+            document.getElementById('experienceInputs').appendChild(experienceDiv);
+        }
+
+        function calculateExperience() {
+            let totalMonths = 0;
+
+            for (let i = 1; i <= experienceCount; i++) {
+                const startDate = new Date(document.getElementById(`startDate${i}`).value);
+                const endDate = new Date(document.getElementById(`endDate${i}`).value);
+                const fte = parseFloat(document.getElementById(`fte${i}`).value) / 100;
+                const relevancy = parseFloat(document.getElementById(`relevancy${i}`).value) / 100;
+                const employmentType = document.getElementById(`employmentType${i}`).value;
+
+                if (startDate && endDate && endDate > startDate) {
+                    const diffTime = Math.abs(endDate - startDate);
+                    let diffMonths = diffTime / (1000 * 60 * 60 * 24 * 30.44); // Approximate average days per month
+                    
+                    // Handling internships and relevancy
+                    if (employmentType === 'internship' && diffMonths < 6) {
+                        if (relevancy === 1) {
+                            diffMonths *= 0.5;
+                        } else {
+                            diffMonths = 0;
+                        }
+                    }
+
+                    // Apply full-time equivalence and relevancy
+                    totalMonths += diffMonths * fte * relevancy;
+                }
+            }
+
+            const totalYears = Math.floor(totalMonths / 12);
+            const remainingMonths = (totalMonths % 12).toFixed(2);
+            const steps = Math.floor(totalYears / 3);
+
+            document.getElementById('totalExperience').innerText = `${totalYears} years and ${remainingMonths} months (${steps} steps)`;
+        }
+    </script>
+</body>
+</html>
