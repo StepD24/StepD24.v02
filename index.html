@@ -2,6 +2,13 @@
 <html>
 <head>
     <title>Experience Calculation Form</title>
+    <style>
+        .preview {
+            border: 1px solid #ccc;
+            margin-top: 10px;
+            padding: 10px;
+        }
+    </style>
 </head>
 <body>
     <h2>Previous experiences relevant for the post (1 step for each 3 years)</h2>
@@ -34,7 +41,8 @@
                 <input type="text" id="title1" name="title1">
                 
                 <label for="upload1">Upload Certificate/Pay Slip:</label>
-                <input type="file" id="upload1" name="upload1">
+                <input type="file" id="upload1" name="upload1" onchange="previewFile(1)">
+                <div id="preview1" class="preview"></div>
             </div>
         </div>
         <button type="button" onclick="addExperienceEntry()">Add another experience</button>
@@ -78,9 +86,35 @@
                 <input type="text" id="title${experienceCount}" name="title${experienceCount}">
                 
                 <label for="upload${experienceCount}">Upload Certificate/Pay Slip:</label>
-                <input type="file" id="upload${experienceCount}" name="upload${experienceCount}">
+                <input type="file" id="upload${experienceCount}" name="upload${experienceCount}" onchange="previewFile(${experienceCount})">
+                <div id="preview${experienceCount}" class="preview"></div>
             `;
             document.getElementById('experienceInputs').appendChild(experienceDiv);
+        }
+
+        function previewFile(experienceNumber) {
+            const fileInput = document.getElementById(`upload${experienceNumber}`);
+            const file = fileInput.files[0];
+            const preview = document.getElementById(`preview${experienceNumber}`);
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const fileType = file.type;
+                    let previewHTML = '';
+
+                    if (fileType.startsWith('image/')) {
+                        previewHTML = `<img src="${e.target.result}" alt="Preview" style="max-width: 100%;">`;
+                    } else if (fileType === 'application/pdf') {
+                        previewHTML = `<embed src="${e.target.result}" type="application/pdf" width="100%" height="500px">`;
+                    } else {
+                        previewHTML = `<a href="${e.target.result}" target="_blank">Open File</a>`;
+                    }
+
+                    preview.innerHTML = previewHTML;
+                };
+                reader.readAsDataURL(file);
+            }
         }
 
         function calculateExperience() {
@@ -120,3 +154,4 @@
     </script>
 </body>
 </html>
+
