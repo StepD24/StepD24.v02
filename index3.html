@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Experience Tracker</title>
+</head>
+<body>
+    <!-- File Preview -->
+    <iframe id="filePreview" style="display:none;" width="600" height="400"></iframe>
+    <button onclick="closePreview()">Close Preview</button>
+    
+    <!-- Experience List -->
+    <ul id="experienceList">
+        <!-- Example Experience -->
+        <li>
+            <span>Job Title at Company</span>
+            <span>Duration: <span id="monthsOfExperience">24 months</span></span>
+            <button onclick="previewFile('path/to/file.pdf')">Preview File</button>
+            <button onclick="deleteExperience(1)">Delete</button>
+        </li>
+    </ul>
+
+    <script>
+        let experiences = [
+            {id: 1, title: 'Job Title', company: 'Company', startDate: '2020-01-01', endDate: '2022-01-01', fileUrl: 'path/to/file.pdf'}
+        ];
+
+        function previewFile(fileUrl) {
+            let iframe = document.getElementById('filePreview');
+            iframe.src = fileUrl;
+            iframe.style.display = 'block';
+        }
+
+        function closePreview() {
+            let iframe = document.getElementById('filePreview');
+            iframe.style.display = 'none';
+            iframe.src = '';
+        }
+
+        function deleteExperience(experienceId) {
+            experiences = experiences.filter(exp => exp.id !== experienceId);
+            updateExperienceList();
+        }
+
+        function updateExperienceList() {
+            // Code to update the displayed experience list
+        }
+
+        function calculateMonths(startDate, endDate) {
+            let start = new Date(startDate);
+            let end = new Date(endDate);
+            let months = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());
+            document.getElementById('monthsOfExperience').innerText = months + ' months';
+        }
+
+        // Initialize
+        calculateMonths('2020-01-01', '2022-01-01');
+    </script>
+</body>
+</html>
